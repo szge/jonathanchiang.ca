@@ -36,7 +36,7 @@ export const PinnedPostList: React.FC<Props> = ({ q, posts, tags }) => {
         {!filteredPosts.length && (
           null
         )}
-        {filteredPosts.slice(0, 1).map((post) => (
+        {filteredPosts.map((post) => (
           <PostCard key={post.slug} post={post} />
         ))}
       </div>
