@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
-  const mode = req.body.mode as PromptModeType || "technical";
+  const mode = req.body.mode as PromptModeType || "Technical";
   const topic = req.body.topic as TechnicalTopicType || "Any topic";
 
   try {
@@ -45,7 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-function generatePrompt(mode: PromptModeType = "technical", topic: TechnicalTopicType = "Any topic") {
+function generatePrompt(mode: PromptModeType = "Technical", topic: TechnicalTopicType = "Any topic") {
   let topic_prompt = "";
   switch (topic) {
     case "Supervised":
@@ -92,17 +92,16 @@ function generatePrompt(mode: PromptModeType = "technical", topic: TechnicalTopi
       break;
   }
 
-  return `What is one novel approach or technique that could be developed to ensure that advanced AI systems align with human values and goals, while maintaining safety and avoiding unintended consequences?
-  Consider a ${mode} aspect of AI alignment, rather than ${mode === "philosophical" ? "technical" : "philosophical"}.
-
-  ${
-    mode === "technical"
-      ? topic_prompt
-      : ""
-  }
-
-  Propose a novel approach that goes beyond existing research, proposes many new ideas, and introduces new technical terms.
-  Summarize your idea in a few sentences.
-  Your idea should be extraordinarily crazy and unconventional.
-  `;
+  const prompt = `What is one novel approach or technique that could be developed to ensure that advanced AI systems align with human values and goals, while maintaining safety and avoiding unintended consequences?
+Consider a ${mode} aspect of AI alignment, rather than ${mode === "Philosophical" ? "technical" : "philosophical"}.
+${
+  mode === "Technical"
+    ? topic_prompt
+    : ""
+}
+Propose a novel approach that goes beyond existing research, proposes many new ideas, and introduces new technical terms.
+Summarize your idea in a few sentences.
+Your idea should be extraordinarily crazy and unconventional.
+`;
+  return prompt;
 }

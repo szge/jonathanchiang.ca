@@ -6,7 +6,7 @@ type Props = {
   errorType?: "NOT_FOUND" | "UNKNOWN"
 }
 
-export type PromptModeType = "philosophical" | "technical"
+export type PromptModeType = "Philosophical" | "Technical"
 export const TechnicalTopics = [
   "Any topic",
   "Supervised",
@@ -22,17 +22,25 @@ export const TechnicalTopics = [
   "RNNs",
   "LSTM",
   "Transformer",
-  "Generative"
+  "Generative",
 ] as const
 export type TechnicalTopicType = typeof TechnicalTopics[number]
+interface ResponseType {
+  type: PromptModeType
+  topic: TechnicalTopicType
+  content: string
+}
 
 // Have a LLM generate ideas for AI alignment research
 const IdeasPage: React.FC<Props> = ({ errorType }) => {
-  const [responses, setResponses] = React.useState<string[]>([])
-  const [mode, setMode] = React.useState<PromptModeType>("philosophical")
+  const [responses, setResponses] = React.useState<ResponseType[]>([])
+  const [mode, setMode] = React.useState<PromptModeType>("Philosophical")
   const [topic, setTopic] = React.useState<TechnicalTopicType>("Any topic")
+  const [buttonDisabled, setButtonDisabled] = React.useState(false)
 
   async function generateIdea() {
+    setButtonDisabled(true);
+    console.log("Generating idea...")
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
@@ -50,13 +58,22 @@ const IdeasPage: React.FC<Props> = ({ errorType }) => {
         )
       } else {
         const responseMessage = data.result as ChatCompletionResponseMessage
-        setResponses([...responses, responseMessage.content])
+        setResponses([
+          ...responses,
+          {
+            type: mode,
+            topic: topic,
+            content: responseMessage.content,
+          },
+        ])
       }
     } catch (error: any) {
       // Consider implementing your own error handling logic here
       console.error(error)
       alert(error.message)
     }
+
+    setButtonDisabled(false);
   }
 
   return (
@@ -65,10 +82,10 @@ const IdeasPage: React.FC<Props> = ({ errorType }) => {
     >
       <div className="flex flex-col items-center gap-5">
         <div className="flex flex-col items-center">
-          <h2 className="text-lg md:text-xl font-medium mb-2 cursor-pointer text-black dark:text-gray-100">
+          <h2 className="text-lg md:text-xl font-medium mb-2 text-black dark:text-gray-100">
             Use a model to generate ideas for AI alignment research!
           </h2>
-          <h2 className="italic text-sm text-gray-500 font-medium mb-2 cursor-pointer text-black dark:text-gray-100">
+          <h2 className="italic text-sm text-gray-500 font-medium mb-2 text-black dark:text-gray-100">
             Please do not abuse the poor button. Give it time to respond before
             pressing it again.
           </h2>
@@ -79,12 +96,21 @@ const IdeasPage: React.FC<Props> = ({ errorType }) => {
           currentTopic={topic}
           setTopic={setTopic}
         />
-        <a
-          onClick={generateIdea}
-          className="hover:bg-blue-400 group flex items-center rounded-md bg-blue-500 text-white text-sm font-medium pl-2 pr-3 py-2 shadow-sm cursor-pointer select-none"
-        >
-          💡 Generate a New Idea
-        </a>
+        {buttonDisabled ? (
+          <a
+            onClick={undefined}
+            className="hover:bg-blue-400 group flex items-center rounded-md bg-blue-500 text-white text-sm font-medium pl-2 pr-3 py-2 shadow-sm cursor-not-allowed select-none opacity-50"
+          >
+            💡 Generate a Genius Idea
+          </a>
+        ) : (
+          <a
+            onClick={generateIdea}
+            className="hover:bg-blue-400 group flex items-center rounded-md bg-blue-500 text-white text-sm font-medium pl-2 pr-3 py-2 shadow-sm cursor-pointer select-none"
+          >
+            💡 Generate a Genius Idea
+          </a>
+        )}
         {responses
           .slice(0)
           .reverse()
@@ -92,9 +118,10 @@ const IdeasPage: React.FC<Props> = ({ errorType }) => {
             return (
               <div
                 key={index}
-                className={`w-full flex flex-row justify-between items-center mb-2 py-8 bg-opacity-60 px-4 max-w-4xl bg-gray-300 rounded-3xl`}
+                className={`w-full justify-between items-center py-4 bg-opacity-60 px-4 max-w-4xl bg-gray-300 rounded-3xl`}
               >
-                {response}
+                <div className="font-bold">{response.type}</div>
+                <div className="">{response.content}</div>
               </div>
             )
           })}
@@ -111,7 +138,7 @@ const ButtonGroup: React.FC<{
 }> = (props) => {
   const childButtons = (
     <div className="flex flex-wrap gap-2">
-      {props.mode === "philosophical"
+      {props.mode === "Philosophical"
         ? null
         : TechnicalTopics.map((topic, index) => (
             <TechnicalButton
@@ -124,14 +151,14 @@ const ButtonGroup: React.FC<{
     </div>
   )
 
-  if (props.mode === "philosophical") {
+  if (props.mode === "Philosophical") {
     return (
       <div className="inline-flex rounded-md shadow-sm" role="group">
         <button
           type="button"
           className="px-4 py-2 text-sm font-medium border border-gray-200 rounded-l-lg bg-gray-100 text-blue-700 z-10 ring-2 ring-blue-700"
           onClick={() => {
-            props.setMode("philosophical")
+            props.setMode("Philosophical")
           }}
         >
           Philosophical
@@ -140,7 +167,7 @@ const ButtonGroup: React.FC<{
           type="button"
           className="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md"
           onClick={() => {
-            props.setMode("technical")
+            props.setMode("Technical")
           }}
         >
           Technical
@@ -155,7 +182,7 @@ const ButtonGroup: React.FC<{
             type="button"
             className="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg"
             onClick={() => {
-              props.setMode("philosophical")
+              props.setMode("Philosophical")
             }}
           >
             Philosophical
@@ -164,7 +191,7 @@ const ButtonGroup: React.FC<{
             type="button"
             className="px-4 py-2 text-sm font-medium border border-gray-200 rounded-r-md bg-gray-100 text-blue-700 z-10 ring-2 ring-blue-700"
             onClick={() => {
-              props.setMode("technical")
+              props.setMode("Technical")
             }}
           >
             Technical
