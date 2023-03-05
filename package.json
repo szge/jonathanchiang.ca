@@ -21,6 +21,7 @@
     "next": "^12.1.0",
     "notion-client": "^4.19.8",
     "notion-utils": "^4.19.8",
+    "openai": "^3.2.1",
     "preact": "^10.5.15",
     "react": "^17.0.2",
     "react-cusdis": "^2.1.3",

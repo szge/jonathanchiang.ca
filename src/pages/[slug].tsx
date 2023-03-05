@@ -11,7 +11,7 @@ export async function getStaticPaths() {
   const filteredPost = filterPosts(posts, {
     acceptStatus: ["Public", "PublicOnDetail"],
     acceptType: ["Paper", "Post", "Page"],
-  })
+  });
 
   return {
     paths: filteredPost.map((row) => `/${row.slug}`),
