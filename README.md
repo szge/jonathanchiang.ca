@@ -13,9 +13,9 @@ In package.json:
 
 In terminal:
 ```
-> npm run-script dev
-> npm run-script build
-> npm run-script start
+> yarn run dev
+> yarn run build
+> yarn run start
 ```
 
 ## License
